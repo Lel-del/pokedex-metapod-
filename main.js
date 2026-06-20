@@ -1,5 +1,7 @@
 const POKEAPI_URL = "https://pokeapi.co/api/v2";
 const pokemonList = document.getElementById("pokemons");
+const pokemonImage = document.getElementById("pokemon-image");
+const pokemonTypeText = document.getElementById("pokemon-type");
 
 const loadPokemons = async () => {
     try {
@@ -21,13 +23,16 @@ const pokemonSelected = async (pokemonUrl) => {
     try {
         const response = await fetch(pokemonUrl).then(response => response.json());
 
-        const pokemonImage = document.getElementById("pokemon-image");
         const pokemonName = document.getElementById("pokemon-name");
         const pokemonStats = document.getElementById("pokemon-stats");
         const pokemonAbilities = document.getElementById("pokemon-abilities"); 
 
         pokemonImage.src = response.sprites.front_default;
         pokemonName.textContent = response.name;
+
+        const types = response.types.map(element => element.type.name).join(", ");
+        pokemonImage.dataset.types = types;
+        pokemonTypeText.textContent = "";
 
         pokemonStats.innerHTML = "";
         pokemonAbilities.innerHTML = ""; 
@@ -38,7 +43,6 @@ const pokemonSelected = async (pokemonUrl) => {
             pokemonStats.appendChild(li);
         });
 
-        
         response.abilities.forEach(element => {
             const li = document.createElement("li");
             li.textContent = element.ability.name; 
@@ -49,8 +53,30 @@ const pokemonSelected = async (pokemonUrl) => {
         console.error("Error fetching pokemon details:", error);
     }
 }
+
+pokemonImage.addEventListener("mouseenter", () => {
+    if (pokemonImage.dataset.types) {
+        pokemonTypeText.textContent = `Tipo: ${pokemonImage.dataset.types}`;
+    }
+});
+
+pokemonImage.addEventListener("mouseleave", () => {
+    pokemonTypeText.textContent = "";
+});
+
+
 // fetch(`${POKEAPI_URL}/pokemon`)
 // .then(response => response.json())
 // .then(data => {
 //     console.log(data);
 // });
+
+//types": [
+    //{
+      //  "slot": 1,
+        //"type": {
+           // "name": "bug",
+            //"url": "https://pokeapi.co/api/v2/type/7/"
+       // }
+    //}
+//],
